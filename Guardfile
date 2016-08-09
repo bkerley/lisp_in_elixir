@@ -1,4 +1,4 @@
-directories %w{config lib priv test}
+directories %w{config lib test}
 
 ENV["IN_GUARD"] = "true"
 
