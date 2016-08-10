@@ -23,7 +23,11 @@ defmodule LispInElixir.Parser do
   """
 
   def parse(line) when is_binary(line) do
-    line |> Tokenizer.tokenize |> parse([]) |> unwrap
+    line |> Tokenizer.tokenize |> parse
+  end
+
+  def parse(line) when is_list(line) do
+    line |> parse([]) |> unwrap
   end
 
   def parse([], acc) do
