@@ -17,6 +17,6 @@ defmodule LispInElixir.Env do
   end
 
   def get(thing_name, env) do
-    env[thing_name]
+    Map.get(env, thing_name, nil)
   end
 end

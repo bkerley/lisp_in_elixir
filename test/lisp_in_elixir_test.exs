@@ -4,7 +4,7 @@ defmodule LispInElixirTest do
 
   import LispInElixir, only: [eval: 1, eval: 2]
 
-  @delta 0.000000000001
+  @delta 0.001
 
   test "integer arithmetic" do
     assert LispInElixir.eval("(+ 1 2)") == 3
@@ -35,5 +35,35 @@ defmodule LispInElixirTest do
   test "quote" do
     assert ["+", 1, 2] = eval("(quote (+ 1 2))")
     assert [1, 2, 3] = eval("(quote (1 2 3))")
+  end
+
+  test "begin" do
+    assert 3 == eval("(begin (+ 1 1) (+ 1 2))")
+  end
+
+  test "lambda" do
+    assert eval("((lambda (x y) (begin (+ x y))) 1 2)") == 3
+  end
+
+  test "circle area" do
+    initial_env = LispInElixir.Env.default_env
+
+    assert {pi, with_pi_env} =
+      eval("(define pi 3.14159)", initial_env)
+
+    assert_in_delta pi, 3.14150, @delta
+
+    assert {_, with_circle_env} =
+      eval("(define circle-area (lambda (r) (* pi (* r r))))", with_pi_env)
+
+    assert {new_pi, ^with_circle_env} =
+      eval("(circle-area 1)", with_circle_env)
+
+    assert_in_delta new_pi, 3.14159, @delta
+
+    assert {pi_nine, ^with_circle_env} =
+      eval("(circle-area 3)", with_circle_env)
+
+    assert_in_delta pi_nine, 28.27433, @delta
   end
 end

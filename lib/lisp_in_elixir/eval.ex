@@ -1,5 +1,6 @@
 defmodule LispInElixir.Eval do
   alias LispInElixir.Env
+  alias LispInElixir.Proc
 
   def eval(x, env) when is_number(x) do
     {x, env}
@@ -23,6 +24,22 @@ defmodule LispInElixir.Eval do
     end
   end
 
+  def eval(["lambda", params, body], env) do
+    {Proc.new(params, body, env), env}
+  end
+
+  def eval([["lambda", params, body] | args], env) do
+    {lda, post_lambda_env} = eval(["lambda", params, body], env)
+    {evald_args, post_args_env} = eval_arg_list(args, post_lambda_env)
+    inner_eval(nil, lda, evald_args, post_args_env)
+  end
+
+  def eval([proc = %Proc{} | args], env) do
+    {arg_list, post_arg_env} = eval_arg_list(args, env)
+
+    Proc.eval(proc, arg_list, post_arg_env)
+  end
+
   def eval(["define", var, exp], env) do
     {result, new_env} = eval(exp, env)
     {result, Env.merge(new_env, %{var => result})}
@@ -32,12 +49,34 @@ defmodule LispInElixir.Eval do
     {exp, env}
   end
 
+  def eval(["begin" | exprs], env) do
+    Enum.reduce(exprs, {nil, env}, fn(expr, {_prev_result, inner_env}) ->
+      eval(expr, inner_env)
+    end)
+  end
+
   def eval([proc_name | args], initial_env) do
-    {evald_args, final_env} = args
-    |> Enum.map_reduce(initial_env, &eval(&1, &2))
+    {evald_args, final_env} = eval_arg_list(args, initial_env)
 
     proc = Env.get(proc_name, final_env)
 
-    {proc.(evald_args), final_env}
+    inner_eval(proc_name, proc, evald_args, final_env)
+  end
+
+  defp inner_eval(proc_name, nil, _, _) do
+    raise "Couldn't find proc #{proc_name}"
+  end
+
+  defp inner_eval(_proc_name, proc = %Proc{}, evald_args, final_env) do
+    Proc.eval(proc, evald_args, final_env)
+  end
+
+  defp inner_eval(_proc_name, func, evald_args, final_env)
+  when is_function(func) do
+    {func.(evald_args), final_env}
+  end
+
+  defp eval_arg_list(args, initial_env) do
+    Enum.map_reduce(args, initial_env, &eval(&1, &2))
   end
 end
