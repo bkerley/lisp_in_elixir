@@ -5,9 +5,11 @@ defmodule LispInElixir do
   alias LispInElixir.Tokenizer
 
   def eval(line) do
-    line
+    {result, env} = line
     |> Tokenizer.tokenize
     |> Parser.parse
     |> Eval.eval(Env.default_env)
+
+    result
   end
 end
