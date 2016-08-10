@@ -31,4 +31,9 @@ defmodule LispInElixirTest do
     assert {11, new_env} = eval("(define x (+ 5 6))", initial_env)
     assert {11, ^new_env} = eval("(+ x 0)", new_env)
   end
+
+  test "quote" do
+    assert ["+", 1, 2] = eval("(quote (+ 1 2))")
+    assert [1, 2, 3] = eval("(quote (1 2 3))")
+  end
 end

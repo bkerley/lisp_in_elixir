@@ -28,6 +28,10 @@ defmodule LispInElixir.Eval do
     {result, Env.merge(new_env, %{var => result})}
   end
 
+  def eval(["quote", exp], env) do
+    {exp, env}
+  end
+
   def eval([proc_name | args], initial_env) do
     {evald_args, final_env} = args
     |> Enum.map_reduce(initial_env, &eval(&1, &2))
