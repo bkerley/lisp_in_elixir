@@ -1,8 +1,12 @@
 defmodule LispInElixir.Eval do
   alias LispInElixir.Env
 
-  def eval(x, env) when is_binary(x) or is_number(x) do
+  def eval(x, env) when is_number(x) do
     {x, env}
+  end
+
+  def eval(x, env) when is_binary(x) do
+    {env[x], env}
   end
 
   def eval(["if", condition, action], env) do
@@ -24,7 +28,10 @@ defmodule LispInElixir.Eval do
     {result, Env.merge(new_env, %{var => result})}
   end
 
-  def eval([proc_name | args], env) do
-    {env[proc_name].(args), env}
+  def eval([proc_name | args], initial_env) do
+    {evald_args, final_env} = args
+    |> Enum.map_reduce(initial_env, &eval(&1, &2))
+
+    {final_env[proc_name].(evald_args), final_env}
   end
 end

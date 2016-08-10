@@ -11,4 +11,8 @@ defmodule LispInElixir.Env do
   }
 
   def default_env(), do: @default_env
+
+  def merge(old_env, new_env) do
+    Map.merge(old_env, new_env)
+  end
 end

@@ -2,7 +2,7 @@ defmodule LispInElixirTest do
   use ExUnit.Case
   doctest LispInElixir
 
-  import LispInElixir, only: [eval: 1]
+  import LispInElixir, only: [eval: 1, eval: 2]
 
   @delta 0.000000000001
 
@@ -23,5 +23,12 @@ defmodule LispInElixirTest do
   test "conditions" do
     assert eval("(if (> 2 1) 3 4)") == 3
     assert eval("(if (> 1 2) 3 4)") == 4
+  end
+
+  test "define" do
+    initial_env = LispInElixir.Env.default_env
+
+    assert {11, new_env} = eval("(define x (+ 5 6))", initial_env)
+    assert {11, ^new_env} = eval("(+ x 0)", new_env)
   end
 end
