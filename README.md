@@ -1,24 +1,15 @@
 # LispInElixir
 
-**TODO: Add description**
+[![Build Status](https://travis-ci.org/bkerley/lisp_in_elixir.svg?branch=master)](https://travis-ci.org/bkerley/lisp_in_elixir)
+
+I had a day of air travel ahead of me and decided to implement a LISP in Elixir,
+based on Peter Norvig's
+["(How to Write a (Lisp) Interpreter (in Python))"][norvig], with tweaks
+and changes necessary to make it work in Elixir.
+
+[norvig]: http://www.norvig.com/lispy.html
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
-
-  1. Add `lisp_in_elixir` to your list of dependencies in `mix.exs`:
-
-    ```elixir
-    def deps do
-      [{:lisp_in_elixir, "~> 0.1.0"}]
-    end
-    ```
-
-  2. Ensure `lisp_in_elixir` is started before your application:
-
-    ```elixir
-    def application do
-      [applications: [:lisp_in_elixir]]
-    end
-    ```
-
+Just clone it. I don't intend to release this in a useful form for
+anything but learning by reading the source and a bit of playing with it.
