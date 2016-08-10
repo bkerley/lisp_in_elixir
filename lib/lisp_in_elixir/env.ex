@@ -15,4 +15,8 @@ defmodule LispInElixir.Env do
   def merge(old_env, new_env) do
     Map.merge(old_env, new_env)
   end
+
+  def get(thing_name, env) do
+    env[thing_name]
+  end
 end

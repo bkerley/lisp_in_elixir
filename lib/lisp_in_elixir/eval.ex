@@ -6,7 +6,7 @@ defmodule LispInElixir.Eval do
   end
 
   def eval(x, env) when is_binary(x) do
-    {env[x], env}
+    {Env.get(x, env), env}
   end
 
   def eval(["if", condition, action], env) do
@@ -32,6 +32,8 @@ defmodule LispInElixir.Eval do
     {evald_args, final_env} = args
     |> Enum.map_reduce(initial_env, &eval(&1, &2))
 
-    {final_env[proc_name].(evald_args), final_env}
+    proc = Env.get(proc_name, final_env)
+
+    {proc.(evald_args), final_env}
   end
 end
