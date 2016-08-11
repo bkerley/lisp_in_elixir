@@ -20,9 +20,24 @@ defmodule LispInElixirTest do
     assert_in_delta LispInElixir.eval("(/ 5.0 2.5)"), 2.0, @delta
   end
 
+  test "unusual arithmetic" do
+    assert eval("(+ 1 (quote ()))") == 1
+  end
+
   test "conditions" do
     assert eval("(if (> 2 1) 3 4)") == 3
     assert eval("(if (> 1 2) 3 4)") == 4
+  end
+
+  test "booleans" do
+    assert eval("(if (not (quote ())) 3 4)") == 3
+    assert eval("(if (not 1) 3 4)") == 4
+    assert eval("(if (and (quote ()) 1) 3 4)") == 4
+    assert eval("(if (or (quote ()) 1) 3 4)") == 3
+  end
+
+  test "condition truthiness" do
+    assert eval("(if (quote ()) 3 4)") == 4
   end
 
   test "define" do
@@ -45,6 +60,11 @@ defmodule LispInElixirTest do
     assert eval("((lambda (x y) (begin (+ x y))) 1 2)") == 3
   end
 
+  test "car and cdr" do
+    assert 3 == eval("(car (quote (3 2 1)))")
+    assert [2, 1] == eval("(cdr (quote (3 2 1)))")
+  end
+
   test "circle area" do
     initial_env = LispInElixir.Env.default_env
 
@@ -65,5 +85,26 @@ defmodule LispInElixirTest do
       eval("(circle-area 3)", with_circle_env)
 
     assert_in_delta pi_nine, 28.27433, @delta
+  end
+
+  test "factorial" do
+    assert 3628800 == eval("""
+    (begin
+      (define fact (lambda (n) (if (<= n 1) 1 (* n (fact (- n 1))))))
+      (fact 10))
+    """)
+  end
+
+  test "count" do
+    assert 4 == eval("""
+    (begin
+      (define count
+        (lambda (item L)
+          (if L
+            (+ (equal? item (car L))
+            (count item (cdr L)))
+            0)))
+      (count (quote the) (quote (the more the merrier the bigger the better))))
+    """)
   end
 end

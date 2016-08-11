@@ -10,15 +10,21 @@ defmodule LispInElixir.Eval do
     {Env.get(x, env), env}
   end
 
+  def eval(nil, env) do
+    {[], env}
+  end
+
   def eval(["if", condition, action], env) do
     eval(["if", condition, action, nil], env)
   end
 
   def eval(["if", condition, action, alternative], env) do
-    {truthy, modified_env} = eval(condition, env)
+    {condition_result, modified_env} = eval(condition, env)
+
+    truthiness = truthy?(condition_result)
 
     cond do
-      truthy -> eval(action, modified_env)
+      truthiness -> eval(action, modified_env)
       alternative -> eval(alternative, modified_env)
       true -> {nil, modified_env}
     end
@@ -75,6 +81,24 @@ defmodule LispInElixir.Eval do
   when is_function(func) do
     {func.(evald_args), final_env}
   end
+
+  @doc ~S"""
+  iex> truthy? []
+  false
+
+  iex> truthy? nil
+  false
+
+  iex> truthy? 5
+  true
+
+  iex> truthy? 0
+  true
+  """
+  def truthy?([]), do: false
+  def truthy?(nil), do: false
+  def truthy?(false), do: false
+  def truthy?(_other), do: true
 
   defp eval_arg_list(args, initial_env) do
     Enum.map_reduce(args, initial_env, &eval(&1, &2))
