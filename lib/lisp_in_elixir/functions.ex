@@ -17,6 +17,10 @@ defmodule LispInElixir.Functions do
     end)
   end
 
+  def cons([first, rest]) do
+    [first | rest]
+  end
+
   def subtract(args) do
     args
     |> Enum.reverse

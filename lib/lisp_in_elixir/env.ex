@@ -19,11 +19,13 @@ defmodule LispInElixir.Env do
       "or" => f(or_),
 
       "equal?" => f(eq),
+      "=" => f(eq),
       ">" => f(gt),
       ">=" => f(gteq),
       "<" => f(lt),
       "<=" => f(lteq),
 
+      "cons" => f(cons),
       "car" => f(car),
       "cdr" => f(cdr),
     }

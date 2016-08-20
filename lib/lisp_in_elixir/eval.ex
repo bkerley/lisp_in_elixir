@@ -61,6 +61,19 @@ defmodule LispInElixir.Eval do
     end)
   end
 
+  def eval(["map", proc_name | args], initial_env) do
+
+    {[evald_args], arg_env} = eval_arg_list(args, initial_env)
+
+    {revd, final_env} = Enum.reduce(evald_args, {[], arg_env},
+      fn(el, {running, inner_env}) ->
+      {result, new_env} = eval([proc_name, el], inner_env)
+      {[result | running], new_env}
+    end)
+
+    {Enum.reverse(revd), final_env}
+  end
+
   def eval([proc_name | args], initial_env) do
     {evald_args, final_env} = eval_arg_list(args, initial_env)
 
