@@ -135,4 +135,18 @@ defmodule LispInElixirTest do
       )
     """)
   end
+
+  test "y combinator" do
+    assert 3628800 == eval("""
+    (begin
+      (define Y
+        (lambda (X)
+          ((lambda (procedure)
+            (X (lambda (arg) ((procedure procedure) arg))))
+           (lambda (procedure)
+            (X (lambda (arg) ((procedure procedure) arg)))))))
+      ((Y (lambda (fact)
+        (lambda (n) (if (<= n 1) 1 (* n (fact (- n 1))))))) 10))
+    """)
+  end
 end
