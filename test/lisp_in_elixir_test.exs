@@ -149,4 +149,17 @@ defmodule LispInElixirTest do
         (lambda (n) (if (<= n 1) 1 (* n (fact (- n 1))))))) 10))
     """)
   end
+
+  test "elixir assertions" do
+    env_with_assert = LispInElixir.Env.default_env
+    |> LispInElixir.Env.merge(%{"assert" => fn([val])->
+                                 assert(LispInElixir.Eval.truthy?(val))
+                               end})
+
+    assert_raise ExUnit.AssertionError, fn ->
+      eval("""
+      (assert (quote ()))
+      """, env_with_assert)
+    end
+  end
 end
