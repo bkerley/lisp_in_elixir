@@ -74,6 +74,12 @@ defmodule LispInElixir.Eval do
     {Enum.reverse(revd), final_env}
   end
 
+  def eval([some_proc | args], initial_env)
+  when is_list(some_proc) do
+    {evald_proc, post_proc_env} = eval(some_proc, initial_env)
+    eval([evald_proc | args], post_proc_env)
+  end
+
   def eval([proc_name | args], initial_env) do
     {evald_args, final_env} = eval_arg_list(args, initial_env)
 
@@ -83,6 +89,7 @@ defmodule LispInElixir.Eval do
   end
 
   defp inner_eval(proc_name, nil, _, _) do
+    IO.inspect proc_name
     raise "Couldn't find proc #{proc_name}"
   end
 

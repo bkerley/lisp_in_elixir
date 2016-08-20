@@ -65,6 +65,10 @@ defmodule LispInElixirTest do
     assert [2, 1] == eval("(cdr (quote (3 2 1)))")
   end
 
+  test "in place lambda" do
+    assert 1 == eval("((lambda (x) (+ 1 x)) 0)")
+  end
+
   test "circle area" do
     initial_env = LispInElixir.Env.default_env
 
@@ -109,6 +113,15 @@ defmodule LispInElixirTest do
             (count item (cdr L)))
             0)))
       (count (quote the) (quote (the more the merrier the bigger the better))))
+    """)
+  end
+
+  test "repeat twice" do
+    assert 655360 == eval("""
+    (begin
+      (define twice (lambda (n) (+ n n)))
+      (define repeat (lambda (f) (lambda (x) (f (f x)))))
+      ((repeat (repeat (repeat (repeat twice)))) 10))
     """)
   end
 
