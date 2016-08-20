@@ -28,7 +28,7 @@ defmodule LispInElixir.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:doc_first_formatter, ">= 0.0.2", only: :dev}
+      {:doc_first_formatter, ">= 0.0.2"}
     ]
   end
 end
